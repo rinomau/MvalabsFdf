@@ -1,11 +1,11 @@
 <?php
 
-namespace MvlabsFdf\Service;
+namespace MvlabsPdf\Service;
 
 use Zend\ServiceManager\FactoryInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
-class FdfServiceFactory implements FactoryInterface {
+class PdfServiceFactory implements FactoryInterface {
 
 	public function createService(ServiceLocatorInterface $serviceLocator) {
         
@@ -14,12 +14,9 @@ class FdfServiceFactory implements FactoryInterface {
         
         //@fixme Verificare se sono settati i due parametri e decidere cosa fare se non lo sono
         
-        return new FdfService(
-                $as_config['fdf_paths']['fdf_file_path'],
-                $as_config['fdf_paths']['fdf_file_name'],
-                $as_config['fdf_paths']['pdf_file_path'],
-                $as_config['fdf_paths']['pdf_file_name'],
-                $as_config['pdftk_paths']['bin']
+        return new PdfService(
+                $as_config['mvlabsfdf']['paths']['pdf'],
+                $as_config['mvlabsfdf']['paths']['pdftk']
                 );
 	}
 

@@ -7,7 +7,7 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace MvlabsFdf;
+namespace MvlabsPdf;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
@@ -37,11 +37,12 @@ class Module
             ),
         );
     }
+    
     public function getServiceConfig()
     {
         return array(
             'factories' => array(
-                'fdf'    => '\MvlabsFdf\Service\FdfServiceFactory'
+                'MvlabsPdf\Service\PdfService'    => '\MvlabsPdf\Service\PdfServiceFactory'
             ),
         );
     }

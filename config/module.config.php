@@ -1,21 +1,21 @@
 <?php
 
-namespace MvlabsFdf;
+namespace MvlabsPdf;
 
 return array(
-    // Fdf directory
-    'fdf_paths' => array(
-        
-        'fdf_file_path' => '/tmp',
-        'fdf_file_name' => '/fdf_test.fdf',
-        
-        'pdf_file_path' => '/tmp',
-        'pdf_file_name' => '/pdf_test.pdf',
-    ),
     
-    'pdftk_paths' => array(
-        
-        'bin' => '/usr/bin/pdftk'
-        
+    'mvlabsfdf' => array(
+
+        'paths' => array(
+
+            // master PDF
+            'pdf' => __DIR__ . '/../../../data/pdfTemplate',
+
+            // binario di pdftk
+            'pdftk' => '/usr/bin/pdftk'
+            
+        ),
+            
     )
+    
 );
