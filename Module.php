@@ -7,7 +7,7 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace MvalabsFdf;
+namespace MvlabsFdf;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
@@ -41,7 +41,7 @@ class Module
     {
         return array(
             'factories' => array(
-                'fdf'    => '\MvalabsFdf\Service\FdfServiceFactory'
+                'fdf'    => '\MvlabsFdf\Service\FdfServiceFactory'
             ),
         );
     }
