@@ -1,0 +1,2 @@
+- Creare un servizio che dato in input un array associativo crea il corrispondente fdf file nella cartella specificata
+- Creare una uty a riga di comando che dato in input un pdf ritorna una stringa con l'elenco dei campi modulo presenti nel file indicato
