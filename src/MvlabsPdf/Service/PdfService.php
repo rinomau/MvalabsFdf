@@ -33,6 +33,10 @@ class PdfService {
         return $this->pdfFilePath;
     }
     
+    public function getPdftkBinary() {
+        return $this->pdftkBinary;
+    }
+
     public function test(){
         return 'sono nella funzione test di FdfService. Leggo pdf in '.$this->getPdfFilename().' scrivo fdf in '.$this->getPdfFilename();
     }
@@ -42,8 +46,33 @@ class PdfService {
         $this->writeFile($s_values, $s_fdfFileName);
     }
     
-    public function flatFdfPdf($s_pdfName, $s_fdfName){
-        //exec('pdftk cippalippa.pdf fill_form cippalippa.fdf output superpippo.pdf flatten');
+    public function getPdf($s_masterPdfFileName, $as_values, $b_flat = true){
+        
+        $s_fdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
+        $s_pdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
+            
+        $this->writeFdf($s_masterPdfFileName, $as_values, $s_fdfTempName);
+        
+        $s_cmd = $this->getPdftkBinary() . ' ' . 
+                 $this->getPdfFilePath() . '/' . $s_masterPdfFileName . 
+                 ' fill_form ' . 
+                 $this->getPdfFilePath() . '/' . $s_fdfTempName . 
+                 ' output ' . 
+                 $this->getPdfFilePath() . '/' . $s_pdfTempName;
+        
+        if ($b_flat) {
+            $s_cmd .= ' flatten';
+        }
+        
+        exec($s_cmd);
+        
+        $s_result = file_get_contents($this->getPdfFilePath() . '/' . $s_pdfTempName);
+        
+        unlink($this->getPdfFilePath() . '/' . $s_fdfTempName);
+        unlink($this->getPdfFilePath() . '/' . $s_pdfTempName);
+        
+        return $s_result;
+        
     }
     
     /**
