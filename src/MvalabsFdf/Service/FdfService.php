@@ -1,6 +1,6 @@
 <?php
 
-namespace Fdf\Service;
+namespace MvalabsFdf\Service;
 
 class FdfService {
     

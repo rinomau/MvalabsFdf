@@ -1,6 +1,6 @@
 <?php
 
-namespace Fdf;
+namespace MvalabsFdf;
 
 return array(
     // Fdf directory
