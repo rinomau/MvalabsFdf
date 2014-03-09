@@ -1,0 +1,13 @@
+{
+    "name": "rinomau/MvlabsFdf",
+    "description": "MV Labs FDF / PDF generator",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "pdf",
+        "fdf",
+        "zf2"
+    ],
+    
+    "autoload": {"psr-0": {"": "src"}}
+
+}
