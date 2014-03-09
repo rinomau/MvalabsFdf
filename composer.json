@@ -8,6 +8,10 @@
         "zf2"
     ],
     
-    "autoload": {"psr-0": {"": "src"}}
+    "autoload" : {
+        "psr-0" : {
+            "MvlabsFdf\\" : "src/"
+        }
+    },
 
 }
