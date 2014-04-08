@@ -2,6 +2,8 @@
 
 namespace MvlabsPdf\Service;
 
+use MvlabsPdf\Exception;
+
 class PdfService {
     
     /**
@@ -46,7 +48,66 @@ class PdfService {
         $this->writeFile($s_values, $s_fdfFileName);
     }
     
-    public function getPdf($s_masterPdfFileName, $as_values, $b_flat = true){
+    public function getPartialPdfFile($s_masterPdfFileName, $i_pageFrom, $i_pagesNum, $as_values = array(), $b_flat = true) {
+        
+        $s_pdfTempName = $this->extractPages($s_masterPdfFileName, $i_pageFrom, $i_pageFrom + $i_pagesNum);
+        
+        if (!empty($as_values)) {
+        
+            $s_pdf = $this->getPdfFile($s_pdfTempName, $as_values, $b_flat);
+            
+            unlink($this->getPdfFilePath() . '/' . $s_pdfTempName);
+
+        } else {
+            
+            $s_pdf = $this->getPdfFilePath() . '/' . $s_pdfTempName;
+            
+        }
+        
+        return $s_pdf;
+        
+    }
+    
+    public function getMergedPdfFile(array $as_files) {
+        
+        $s_pdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
+        
+        $s_cmd = $this->getPdftkBinary() . ' ' .
+                 implode(' ', $as_files) .
+                 ' cat ' . 
+                 ' output ' . 
+                 $this->getPdfFilePath() . '/' . $s_pdfTempName;
+        
+        exec($s_cmd);
+        
+        return $this->getPdfFilePath() . '/' . $s_pdfTempName;
+        
+    }
+    
+    private function extractPages($s_masterPdfFileName, $i_pageFrom, $i_pageTo) {
+        
+        if ($i_pageFrom > $i_pageTo) {
+            throw new Exception('Extract pages: page from is bigger than page to');
+        }
+        
+        $s_pdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
+        
+        $s_pages = $i_pageFrom . '-' . --$i_pageTo;
+        
+        $s_cmd = $this->getPdftkBinary() . ' ' . 
+                 $this->getPdfFilePath() . '/' . $s_masterPdfFileName . 
+                 ' cat ' . 
+                 $s_pages .
+                 ' output ' . 
+                 $this->getPdfFilePath() . '/' . $s_pdfTempName;
+        
+        exec($s_cmd);
+        
+        return $s_pdfTempName;
+        
+    }
+    
+    public function getPdfFile($s_masterPdfFileName, $as_values, $b_flat = true) {
         
         $s_fdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
         $s_pdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
@@ -66,10 +127,19 @@ class PdfService {
         
         exec($s_cmd);
         
-        $s_result = file_get_contents($this->getPdfFilePath() . '/' . $s_pdfTempName);
-        
         unlink($this->getPdfFilePath() . '/' . $s_fdfTempName);
-        unlink($this->getPdfFilePath() . '/' . $s_pdfTempName);
+        
+        return $this->getPdfFilePath() . '/' . $s_pdfTempName;
+        
+    }
+    
+    public function getPdf($s_masterPdfFileName, $as_values, $b_flat = true){
+        
+        $s_pdfTempName = $this->getPdfFile($s_masterPdfFileName, $as_values, $b_flat);
+        
+        $s_result = file_get_contents($s_pdfTempName);
+         
+        unlink($s_pdfTempName);
         
         return $s_result;
         
