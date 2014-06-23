@@ -16,7 +16,8 @@ class PdfServiceFactory implements FactoryInterface {
         
         return new PdfService(
                 $as_config['mvlabsfdf']['paths']['pdf'],
-                $as_config['mvlabsfdf']['paths']['pdftk']
+                $as_config['mvlabsfdf']['paths']['pdftk'],
+                $as_config['mvlabsfdf']['paths']['gs']
                 );
 	}
 

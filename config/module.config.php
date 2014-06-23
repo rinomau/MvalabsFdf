@@ -12,7 +12,10 @@ return array(
             'pdf' => __DIR__ . '/../../../../data/pdfTemplate',
 
             // binario di pdftk
-            'pdftk' => '/usr/bin/pdftk'
+            'pdftk' => '/usr/bin/pdftk',
+
+            //binario GhostScript
+            'gs'    => '/usr/bin/gs'
             
         ),
             

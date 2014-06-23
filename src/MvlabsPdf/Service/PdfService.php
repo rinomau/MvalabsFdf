@@ -18,12 +18,19 @@ class PdfService {
      */
     private $pdftkBinary;
     
+    /**
+     * Eseguibile di ghostscript
+     * @var type string
+     */
+    private $gsBinary;
     
-    public function __construct($s_pdfFilePath,$s_pdftkBin) {
+    public function __construct($s_pdfFilePath,$s_pdftkBin, $s_ghostscriptBin) {
         
         $this->pdfFilePath = $s_pdfFilePath;
         
         $this->pdftkBinary = $s_pdftkBin;
+        
+        $this->gsBinary = $s_ghostscriptBin;
         
     }
     
@@ -39,6 +46,10 @@ class PdfService {
         return $this->pdftkBinary;
     }
 
+    public function getGsBinary() {
+        return $this->gsBinary;
+    }
+    
     public function test(){
         return 'sono nella funzione test di FdfService. Leggo pdf in '.$this->getPdfFilename().' scrivo fdf in '.$this->getPdfFilename();
     }
@@ -71,16 +82,21 @@ class PdfService {
     public function getMergedPdfFile(array $as_files) {
         
         $s_pdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
+        $s_pdfFileName = $this->getPdfFilePath() . '/' . $s_pdfTempName;
         
         $s_cmd = $this->getPdftkBinary() . ' ' .
                  implode(' ', $as_files) .
                  ' cat ' . 
                  ' output ' . 
-                 $this->getPdfFilePath() . '/' . $s_pdfTempName;
+                 $s_pdfFileName;
         
         exec($s_cmd);
         
-        return $this->getPdfFilePath() . '/' . $s_pdfTempName;
+        //run ghostscript file size optimization.
+        $s_cmdCompress = $this->getGsBinary() . ' -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH -dQUIET -sOutputFile='  . $s_pdfFileName . '.compress ' . $s_pdfFileName;
+        exec($s_cmdCompress);
+        
+        return $s_pdfFileName . '.compress';
         
     }
     
