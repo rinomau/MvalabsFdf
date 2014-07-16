@@ -96,6 +96,9 @@ class PdfService {
         $s_cmdCompress = $this->getGsBinary() . ' -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH -dQUIET -sOutputFile='  . $s_pdfFileName . '.compress ' . $s_pdfFileName;
         exec($s_cmdCompress);
         
+        //cancello il pdf originale dopo la generazione del nuovo pdf compresso
+        unlink($s_pdfFileName);
+        
         return $s_pdfFileName . '.compress';
         
     }
