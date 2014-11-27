@@ -79,28 +79,37 @@ class PdfService {
         
     }
     
-    public function getMergedPdfFile(array $as_files) {
-        
+    public function getMergedPdfFile(array $as_files, $s_fileWatermark=null) {
+    
         $s_pdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
         $s_pdfFileName = $this->getPdfFilePath() . '/' . $s_pdfTempName;
-        
+        $s_pdfFileNameResult = $s_pdfFileName;
+    
         $s_cmd = $this->getPdftkBinary() . ' ' .
-                 implode(' ', $as_files) .
-                 ' cat ' . 
-                 ' output ' . 
-                 $s_pdfFileName;
-        
+            implode(' ', $as_files) .
+            ' cat ' .
+            ' output ' .
+            $s_pdfFileName;
+    
         exec($s_cmd);
-        
+    
         //run ghostscript file size optimization.
         $s_cmdCompress = $this->getGsBinary() . ' -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH -dQUIET -sOutputFile='  . $s_pdfFileName . '.compress ' . $s_pdfFileName;
         exec($s_cmdCompress);
-        
+        $s_pdfFileNameResult = $s_pdfFileName . '.compress';
+    
+        if (!empty($s_fileWatermark) ){
+            //run command for add a waterkmark
+            $s_cmd = $this->getPdftkBinary() . ' ' . $s_pdfFileName . '.compress multistamp ' . $this->getPdfFilePath(). '/' .$s_fileWatermark . '  output ' . $s_pdfFileName . '.watermarked';
+            exec($s_cmd);
+            $s_pdfFileNameResult = $s_pdfFileName . '.watermarked';
+        }
+    
         //cancello il pdf originale dopo la generazione del nuovo pdf compresso
         unlink($s_pdfFileName);
-        
-        return $s_pdfFileName . '.compress';
-        
+    
+        return $s_pdfFileNameResult;
+    
     }
     
     private function extractPages($s_masterPdfFileName, $i_pageFrom, $i_pageTo) {
