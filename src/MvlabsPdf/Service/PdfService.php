@@ -61,22 +61,31 @@ class PdfService {
     
     public function getPartialPdfFile($s_masterPdfFileName, $i_pageFrom, $i_pagesNum, $as_values = array(), $b_flat = true) {
         
-        $s_pdfTempName = $this->extractPages($s_masterPdfFileName, $i_pageFrom, $i_pageFrom + $i_pagesNum);
+        $s_pdfTempName = $this->extractPages(
+            $s_masterPdfFileName,
+            array($i_pageFrom.'-'.($i_pageFrom + $i_pagesNum -1))
+        );
         
-        if (!empty($as_values)) {
-        
-            $s_pdf = $this->getPdfFile($s_pdfTempName, $as_values, $b_flat);
-            
-            unlink($this->getPdfFilePath() . '/' . $s_pdfTempName);
+        return $this->getPartialPdfFileWithData($s_pdfTempName, $as_values, $b_flat);
+    }
 
+    public function getPartialPdfFilePages($s_masterPdfFileName, $ai_pages, $as_values = array(), $b_flat = true)
+    {
+        $s_pdfTempName = $this->extractPages($s_masterPdfFileName, $ai_pages);
+
+        return $this->getPartialPdfFileWithData($s_pdfTempName, $as_values, $b_flat);
+    }
+
+    private function getPartialPdfFileWithData($s_pdfTempName, $as_values, $b_flat)
+    {
+        if (!empty($as_values)) {
+            $s_pdf = $this->getPdfFile($s_pdfTempName, $as_values, $b_flat);
+            unlink($this->getPdfFilePath() . '/' . $s_pdfTempName);
         } else {
-            
             $s_pdf = $this->getPdfFilePath() . '/' . $s_pdfTempName;
-            
         }
-        
+
         return $s_pdf;
-        
     }
     
     public function getMergedPdfFile(array $as_files, $s_fileWatermark=null) {
@@ -112,23 +121,25 @@ class PdfService {
     
     }
     
-    private function extractPages($s_masterPdfFileName, $i_pageFrom, $i_pageTo) {
-        
-        if ($i_pageFrom > $i_pageTo) {
-            throw new Exception('Extract pages: page from is bigger than page to');
-        }
+    /**
+     * @param string file name
+     * @param array of strings representing page numbers or intervals of page,
+     * see https://www.pdflabs.com/docs/pdftk-man-page/#dest-op-cat for details
+     */
+    private function extractPages($s_masterPdfFileName, $as_pages)
+    {
         
         $s_pdfTempName = basename(tempnam($this->getPdfFilePath(), ''));
         
-        $s_pages = $i_pageFrom . '-' . --$i_pageTo;
-        
+        $s_pages = implode(' ', $as_pages);
+
         $s_cmd = $this->getPdftkBinary() . ' ' . 
                  $this->getPdfFilePath() . '/' . $s_masterPdfFileName . 
                  ' cat ' . 
                  $s_pages .
                  ' output ' . 
                  $this->getPdfFilePath() . '/' . $s_pdfTempName;
-        
+
         exec($s_cmd);
         
         return $s_pdfTempName;
